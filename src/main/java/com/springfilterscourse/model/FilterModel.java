@@ -21,6 +21,7 @@ public class FilterModel {
 	private String sort;
 	private String equalFilters;
 	private String inFilters;
+	private String dateFilters;
 
 	public FilterModel(Map<String, String> params) {
 		this.limit = params.containsKey(LIMIT_KEY) ? Integer.valueOf(params.get(LIMIT_KEY)) : DEFAULT_LIMIT;
@@ -28,6 +29,7 @@ public class FilterModel {
 		this.sort = params.containsKey(SORT_KEY) ? params.get(SORT_KEY) : DEFAULT_SORT;
 		this.equalFilters = params.containsKey(EQUAL_FILTERS_KEY) ? params.get(EQUAL_FILTERS_KEY) : DEFAULT_EQUAL_FILTERS;
 		this.inFilters = params.containsKey(IN_FILTERS_KEY) ? params.get(IN_FILTERS_KEY) : DEFAULT_IN_FILTERS;
+		this.dateFilters = params.containsKey(DATE_FILTERS_KEY) ? params.get(DATE_FILTERS_KEY) : DEFAULT_DATE_FILTERS_KEY;
 	}
 
 	public Pageable toSpringPegeable() {
@@ -99,6 +101,36 @@ public class FilterModel {
 					List<String> values = Arrays.asList(elements[1].split(","));
 					
 					filters.add(new InFilterModel(column, values, false));
+				}
+			}
+		}
+		
+		return filters;
+	}
+
+	public List<DateFilterModel> getDateFilters() {
+		List<DateFilterModel> filters = new ArrayList<DateFilterModel>();
+		
+		if (dateFilters == null || dateFilters.trim().isEmpty())
+			return filters;
+		
+		String[] filtersParam = dateFilters.split(";");
+		
+		for (String param : filtersParam) {
+			if (param.contains(":")) {
+				String[] elements = param.split(":");
+				
+				if (elements.length == 2) {
+					String column = elements[0];
+					String[] parts = elements[1].split("to");
+					
+					if (parts.length == 2) {
+						String initialDate = parts[0];
+						String finalDate = parts[1];
+						
+						DateFilterModel dfm = new DateFilterModel(column, initialDate, finalDate);
+						filters.add(dfm);
+					}
 				}
 			}
 		}

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.springfilterscourse.domain.Product;
+import com.springfilterscourse.model.DateFilterModel;
 import com.springfilterscourse.model.EqualFilterModel;
 import com.springfilterscourse.model.FilterModel;
 import com.springfilterscourse.model.InFilterModel;
@@ -46,12 +47,16 @@ public class ProductService implements IListService<Product> {
 
 		List<EqualFilterModel> equalFilters = filter.getEqualFilters();
 		List<InFilterModel> inFilters = filter.getInFilters();
+		List<DateFilterModel> dateFilters = filter.getDateFilters();
 
 		for (EqualFilterModel eq : equalFilters)
 			spec = spec.and(ProductSpecification.equal(eq));
 
 		for (InFilterModel in : inFilters)
 			spec = spec.and(ProductSpecification.in(in));
+		
+		for (DateFilterModel df : dateFilters)
+			spec = spec.and(ProductSpecification.dateBetween(df));
 		
 		return spec;
 	}

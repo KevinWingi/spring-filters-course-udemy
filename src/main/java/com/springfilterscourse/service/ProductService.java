@@ -15,7 +15,7 @@ import com.springfilterscourse.model.FilterModel;
 import com.springfilterscourse.model.InFilterModel;
 import com.springfilterscourse.model.PageModel;
 import com.springfilterscourse.repository.ProductRepository;
-import com.springfilterscourse.specification.ProductSpecification;
+import com.springfilterscourse.specification.BasicSpecification;
 
 @Service
 public class ProductService implements IListService<Product> {
@@ -43,6 +43,7 @@ public class ProductService implements IListService<Product> {
 
 	@Override
 	public Specification<Product> buildSpecification(FilterModel filter) {
+		BasicSpecification<Product> bs = new BasicSpecification<>(Product.class);
 		Specification<Product> spec = Specification.where(null);
 
 		List<EqualFilterModel> equalFilters = filter.getEqualFilters();
@@ -50,13 +51,13 @@ public class ProductService implements IListService<Product> {
 		List<DateFilterModel> dateFilters = filter.getDateFilters();
 
 		for (EqualFilterModel eq : equalFilters)
-			spec = spec.and(ProductSpecification.equal(eq));
+			spec = spec.and(bs.equal(eq));
 
 		for (InFilterModel in : inFilters)
-			spec = spec.and(ProductSpecification.in(in));
+			spec = spec.and(bs.in(in));
 		
 		for (DateFilterModel df : dateFilters)
-			spec = spec.and(ProductSpecification.dateBetween(df));
+			spec = spec.and(bs.dateBetween(df));
 		
 		return spec;
 	}

@@ -14,7 +14,7 @@ import com.springfilterscourse.model.FilterModel;
 import com.springfilterscourse.model.InFilterModel;
 import com.springfilterscourse.model.PageModel;
 import com.springfilterscourse.repository.SupplierRepository;
-import com.springfilterscourse.specification.SupplierSpecification;
+import com.springfilterscourse.specification.BasicSpecification;
 
 @Service
 public class SupplierService implements IListService<Supplier> {
@@ -42,16 +42,17 @@ public class SupplierService implements IListService<Supplier> {
 
 	@Override
 	public Specification<Supplier> buildSpecification(FilterModel filter) {
+		BasicSpecification<Supplier> bs = new BasicSpecification<>(Supplier.class);
 		Specification<Supplier> spec = Specification.where(null);
 
 		List<EqualFilterModel> equalFilters = filter.getEqualFilters();
 		List<InFilterModel> inFilters = filter.getInFilters();
 
 		for (EqualFilterModel eq : equalFilters)
-			spec = spec.and(SupplierSpecification.equal(eq));
+			spec = spec.and(bs.equal(eq));
 
 		for (InFilterModel in : inFilters)
-			spec = spec.and(SupplierSpecification.in(in));
+			spec = spec.and(bs.in(in));
 		
 		return spec;
 	}
